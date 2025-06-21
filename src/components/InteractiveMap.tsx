@@ -10,35 +10,103 @@ import { Building, Calendar, MapPin, Phone, Globe, X } from 'lucide-react';
 const mockCompanies = [
   {
     id: 1,
-    name: "Tech Solutions",
-    description: "Empresa de desenvolvimento de software",
+    name: "TechJoinville Solutions",
+    description: "Desenvolvimento de software e sistemas web",
     category: "Tecnologia",
-    phone: "(11) 99999-9999",
-    website: "www.techsolutions.com",
-    lat: -23.550520,
-    lng: -46.633308
+    phone: "(47) 3422-1234",
+    website: "www.techjoinville.com.br",
+    lat: -26.3044,
+    lng: -48.8487
   },
   {
     id: 2,
-    name: "Green Energy Corp",
-    description: "Soluções em energia renovável",
-    category: "Energia",
-    phone: "(11) 88888-8888",
-    website: "www.greenenergy.com",
-    lat: -23.560520,
-    lng: -46.643308
+    name: "Metalúrgica Norte SC",
+    description: "Fundição e usinagem de peças industriais",
+    category: "Metalurgia",
+    phone: "(47) 3435-5678",
+    website: "www.metalurgicnorte.com.br",
+    lat: -26.2946,
+    lng: -48.8397
+  },
+  {
+    id: 3,
+    name: "Agência Digital Joinville",
+    description: "Marketing digital e design gráfico",
+    category: "Marketing",
+    phone: "(47) 3428-9876",
+    website: "www.agenciadigital.com.br",
+    lat: -26.3148,
+    lng: -48.8588
+  },
+  {
+    id: 4,
+    name: "Construtora Cidade das Flores",
+    description: "Construção civil e incorporação imobiliária",
+    category: "Construção",
+    phone: "(47) 3433-4567",
+    website: "www.construtoraflores.com.br",
+    lat: -26.2985,
+    lng: -48.8456
+  },
+  {
+    id: 5,
+    name: "Auto Center Joinville",
+    description: "Peças automotivas e serviços mecânicos",
+    category: "Automotivo",
+    phone: "(47) 3422-3344",
+    website: "www.autocenterjville.com.br",
+    lat: -26.3156,
+    lng: -48.8321
+  },
+  {
+    id: 6,
+    name: "Padaria e Confeitaria Dona Francisca",
+    description: "Panificação, confeitaria e café colonial",
+    category: "Alimentação",
+    phone: "(47) 3425-7890",
+    website: "www.donafrancisca.com.br",
+    lat: -26.3097,
+    lng: -48.8523
+  },
+  {
+    id: 7,
+    name: "Consultoria Empresarial Joinville",
+    description: "Consultoria em gestão e recursos humanos",
+    category: "Consultoria",
+    phone: "(47) 3427-1122",
+    website: "www.consultoriajville.com.br",
+    lat: -26.2891,
+    lng: -48.8654
+  },
+  {
+    id: 8,
+    name: "Farmácia Central",
+    description: "Medicamentos, dermocosméticos e manipulação",
+    category: "Saúde",
+    phone: "(47) 3433-5566",
+    website: "www.farmaciacentral.com.br",
+    lat: -26.3021,
+    lng: -48.8412
   }
 ];
-
 const mockEvents = [
   {
     id: 1,
-    name: "Workshop de Inovação",
-    description: "Evento sobre novas tecnologias",
+    name: "Festival de Dança de Joinville",
+    description: "O maior festival de dança do mundo",
     date: "2024-07-15",
-    location: "Centro de Convenções",
-    lat: -23.545520,
-    lng: -46.628308
+    location: "Centreventos Cau Hansen",
+    lat: -26.2985,
+    lng: -48.8456
+  },
+  {
+    id: 2,
+    name: "Feira do Empreendedor",
+    description: "Networking e oportunidades de negócio",
+    date: "2024-08-20",
+    location: "Expoville",
+    lat: -26.2757,
+    lng: -48.8234
   }
 ];
 
@@ -60,8 +128,8 @@ const InteractiveMap: React.FC<MapProps> = ({ mapboxToken }) => {
     map.current = new mapboxgl.Map({
       container: mapContainer.current,
       style: 'mapbox://styles/mapbox/streets-v11',
-      center: [-46.633308, -23.550520], // São Paulo
-      zoom: 12,
+      center: [-48.8487, -26.3044]], // Joinville
+      zoom: 13,
     });
 
     // Adicionar controles de navegação
