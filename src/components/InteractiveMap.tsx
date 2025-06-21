@@ -59,7 +59,7 @@ const InteractiveMap: React.FC<MapProps> = ({ mapboxToken }) => {
     
     map.current = new mapboxgl.Map({
       container: mapContainer.current,
-      style: 'mapbox://styles/mapbox/streets-v11',
+      style: 'mapbox://styles/mapbox/light-v11',
       center: [-46.633308, -23.550520], // São Paulo
       zoom: 12,
     });
