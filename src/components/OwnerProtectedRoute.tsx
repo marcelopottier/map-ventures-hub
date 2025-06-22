@@ -2,7 +2,7 @@
 import { Navigate, useParams } from "react-router-dom"
 import { useAuth } from "@/contexts/AuthContext"
 import { useQuery } from "@tanstack/react-query"
-import { companiesApi, eventsApi } from "@/services/mockApi"
+import { companiesApi, eventsApi, Company, Event } from "@/services/mockApi"
 
 interface OwnerProtectedRouteProps {
   children: React.ReactNode
@@ -13,10 +13,10 @@ export function OwnerProtectedRoute({ children, resourceType }: OwnerProtectedRo
   const { id } = useParams<{ id: string }>()
   const { user, canEdit, isAuthenticated } = useAuth()
 
-  // Buscar dados do recurso para verificar propriedade
+  // Usar tipos genéricos baseados no resourceType
   const { data: resource, isLoading } = useQuery({
     queryKey: [resourceType, id],
-    queryFn: () => {
+    queryFn: async (): Promise<Company | Event | null> => {
       if (resourceType === 'company') {
         return companiesApi.getById(id!)
       } else {

@@ -84,10 +84,21 @@ export default function CompanyForm() {
       if (isEditing) {
         return companiesApi.update(id!, data)
       } else {
-        return companiesApi.create({
-          ...data,
+        // Garantir que todos os campos obrigatórios estão presentes
+        const companyData = {
+          name: data.name,
+          description: data.description,
+          category: data.category,
+          phone: data.phone,
+          website: data.website,
+          address: data.address,
+          employees: data.employees,
+          founded: data.founded,
+          lat: data.lat,
+          lng: data.lng,
           ownerId: user!.id
-        })
+        }
+        return companiesApi.create(companyData)
       }
     },
     onSuccess: () => {

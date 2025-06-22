@@ -72,10 +72,17 @@ export default function EventForm() {
       if (isEditing) {
         return eventsApi.update(id!, data)
       } else {
-        return eventsApi.create({
-          ...data,
+        // Garantir que todos os campos obrigatórios estão presentes
+        const eventData = {
+          name: data.name,
+          description: data.description,
+          date: data.date,
+          location: data.location,
+          lat: data.lat,
+          lng: data.lng,
           ownerId: user!.id
-        })
+        }
+        return eventsApi.create(eventData)
       }
     },
     onSuccess: () => {
