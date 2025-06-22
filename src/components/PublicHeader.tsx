@@ -1,7 +1,14 @@
 
-import { MapPin, Building, Calendar, LogIn } from "lucide-react"
+import { MapPin, Building, Calendar, LogIn, User, LogOut } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useNavigate, useLocation } from "react-router-dom"
+import { useAuth } from "@/contexts/AuthContext"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 
 const navItems = [
   {
@@ -24,6 +31,12 @@ const navItems = [
 export function PublicHeader() {
   const navigate = useNavigate()
   const location = useLocation()
+  const { user, isAuthenticated, logout } = useAuth()
+
+  const handleLogout = () => {
+    logout()
+    navigate('/')
+  }
 
   return (
     <header className="border-b border-border/50 bg-background/95 backdrop-blur sticky top-0 z-50">
@@ -58,11 +71,33 @@ export function PublicHeader() {
             ))}
           </nav>
 
-          {/* Login Button */}
-          <Button onClick={() => navigate('/login')} className="gap-2">
-            <LogIn className="h-4 w-4" />
-            Entrar
-          </Button>
+          {/* Login/Profile */}
+          {isAuthenticated ? (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" className="gap-2">
+                  <User className="h-4 w-4" />
+                  {user?.name}
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                {user?.type === 'admin' && (
+                  <DropdownMenuItem onClick={() => navigate('/admin')}>
+                    Dashboard Admin
+                  </DropdownMenuItem>
+                )}
+                <DropdownMenuItem onClick={handleLogout}>
+                  <LogOut className="h-4 w-4 mr-2" />
+                  Sair
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ) : (
+            <Button onClick={() => navigate('/login')} className="gap-2">
+              <LogIn className="h-4 w-4" />
+              Entrar
+            </Button>
+          )}
         </div>
       </div>
     </header>

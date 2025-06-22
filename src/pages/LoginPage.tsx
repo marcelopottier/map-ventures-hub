@@ -7,6 +7,7 @@ import { Label } from '@/components/ui/label';
 import { MapPin, Mail, Lock, Eye, EyeOff } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/contexts/AuthContext';
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
@@ -15,14 +16,15 @@ const LoginPage = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { login } = useAuth();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
-    // Simulação de login - substituir por integração real com Supabase
-    setTimeout(() => {
-      if (email && password) {
+    try {
+      const success = await login(email, password);
+      if (success) {
         toast({
           title: "Login realizado com sucesso!",
           description: "Bem-vindo ao MapVentures Hub",
@@ -35,8 +37,15 @@ const LoginPage = () => {
           variant: "destructive",
         });
       }
+    } catch (error) {
+      toast({
+        title: "Erro no login",
+        description: "Ocorreu um erro inesperado",
+        variant: "destructive",
+      });
+    } finally {
       setLoading(false);
-    }, 1000);
+    }
   };
 
   return (
@@ -138,11 +147,13 @@ const LoginPage = () => {
         <Card className="mt-4 bg-blue-50 border-blue-200">
           <CardContent className="p-4 text-center">
             <p className="text-sm text-blue-700 mb-2">
-              <strong>Demonstração:</strong> Use qualquer email e senha para entrar
+              <strong>Demonstração:</strong> Use as credenciais dos usuários mock
             </p>
-            <p className="text-xs text-blue-600">
-              Esta é uma versão demo. Para funcionalidade completa, conecte com Supabase.
-            </p>
+            <div className="text-xs text-blue-600 space-y-1">
+              <p>Admin: admin@admin.com / 123456</p>
+              <p>Empresa: contato@techjoinville.com.br / 123456</p>
+              <p>Organizador: organizador@eventos.com / 123456</p>
+            </div>
           </CardContent>
         </Card>
       </div>
