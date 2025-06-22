@@ -1,14 +1,13 @@
 
 import { Navigate } from "react-router-dom"
+import { useAuth } from "@/contexts/AuthContext"
 
 interface ProtectedRouteProps {
   children: React.ReactNode
 }
 
 export function ProtectedRoute({ children }: ProtectedRouteProps) {
-  // TODO: Implementar verificação real de autenticação quando conectar Supabase
-  // Por enquanto, sempre permitir acesso para desenvolvimento
-  const isAuthenticated = true // Simular usuário logado
+  const { isAuthenticated } = useAuth()
 
   if (!isAuthenticated) {
     return <Navigate to="/login" replace />

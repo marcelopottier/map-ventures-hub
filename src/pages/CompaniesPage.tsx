@@ -1,56 +1,37 @@
 
 import { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Building, Search, Plus, Edit, MapPin, Phone, Globe } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-
-const mockCompanies = [
-  {
-    id: 1,
-    name: "Tech Solutions",
-    description: "Empresa de desenvolvimento de software especializada em soluções web e mobile",
-    category: "Tecnologia",
-    phone: "(11) 99999-9999",
-    website: "www.techsolutions.com",
-    address: "Av. Paulista, 1000 - São Paulo, SP",
-    employees: "50-100",
-    founded: 2015
-  },
-  {
-    id: 2,
-    name: "Green Energy Corp",
-    description: "Soluções inovadoras em energia renovável e sustentabilidade",
-    category: "Energia",
-    phone: "(11) 88888-8888",
-    website: "www.greenenergy.com",
-    address: "Rua das Flores, 500 - São Paulo, SP",
-    employees: "100-200",
-    founded: 2018
-  },
-  {
-    id: 3,
-    name: "Food & Co",
-    description: "Rede de restaurantes com foco em alimentação saudável",
-    category: "Alimentação",
-    phone: "(11) 77777-7777",
-    website: "www.foodandco.com",
-    address: "Rua dos Sabores, 300 - São Paulo, SP",
-    employees: "20-50",
-    founded: 2020
-  }
-];
+import { companiesApi } from '@/services/mockApi';
+import { useAuth } from '@/contexts/AuthContext';
 
 const CompaniesPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const navigate = useNavigate();
+  const { canEdit, isAuthenticated } = useAuth();
 
-  const filteredCompanies = mockCompanies.filter(company =>
+  const { data: companies = [], isLoading } = useQuery({
+    queryKey: ['companies'],
+    queryFn: companiesApi.getAll
+  });
+
+  const filteredCompanies = companies.filter(company =>
     company.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     company.category.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -62,13 +43,15 @@ const CompaniesPage = () => {
             Empresas
           </h1>
           <p className="text-muted-foreground mt-1">
-            Gerencie as empresas cadastradas na plataforma
+            Descubra empresas incríveis em Joinville
           </p>
         </div>
-        <Button onClick={() => navigate('/companies/new')} className="gap-2">
-          <Plus className="h-4 w-4" />
-          Nova Empresa
-        </Button>
+        {isAuthenticated && (
+          <Button onClick={() => navigate('/companies/new')} className="gap-2">
+            <Plus className="h-4 w-4" />
+            Nova Empresa
+          </Button>
+        )}
       </div>
 
       {/* Barra de pesquisa */}
@@ -137,13 +120,15 @@ const CompaniesPage = () => {
                   >
                     Ver Perfil
                   </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => navigate(`/companies/${company.id}/edit`)}
-                  >
-                    <Edit className="h-4 w-4" />
-                  </Button>
+                  {canEdit('company', company.id, company.ownerId) && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => navigate(`/companies/${company.id}/edit`)}
+                    >
+                      <Edit className="h-4 w-4" />
+                    </Button>
+                  )}
                 </div>
               </div>
             </CardContent>
