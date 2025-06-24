@@ -36,6 +36,7 @@ export default function CompanyForm() {
   const { user } = useAuth()
   const queryClient = useQueryClient()
   const isEditing = !!id
+  const isMyCompany = user?.companyId === id
 
   const form = useForm<CompanyFormData>({
     resolver: zodResolver(companySchema),

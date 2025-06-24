@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge'
 import { Building, Phone, Globe, MapPin, Calendar, Users, Edit, ArrowLeft } from 'lucide-react'
 import { companiesApi } from '@/services/mockApi'
 import { useAuth } from '@/contexts/AuthContext'
+import LocationMap from '@/components/LocationMap'
 
 export default function CompanyProfile() {
   const { id } = useParams<{ id: string }>()

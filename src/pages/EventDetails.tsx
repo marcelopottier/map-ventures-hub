@@ -1,4 +1,3 @@
-
 import { useParams, useNavigate } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { Button } from '@/components/ui/button'
@@ -6,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Calendar, MapPin, Edit, ArrowLeft } from 'lucide-react'
 import { eventsApi } from '@/services/mockApi'
 import { useAuth } from '@/contexts/AuthContext'
+import LocationMap from '@/components/LocationMap'
 
 export default function EventDetails() {
   const { id } = useParams<{ id: string }>()

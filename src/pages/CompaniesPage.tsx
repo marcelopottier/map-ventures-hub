@@ -1,149 +1,156 @@
-
-import { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
+import mapboxgl from 'mapbox-gl';
+import 'mapbox-gl/dist/mapbox-gl.css';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { Building, Search, Plus, Edit, MapPin, Phone, Globe } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { Building, MapPin, Phone, Globe, X } from 'lucide-react';
 import { companiesApi } from '@/services/mockApi';
-import { useAuth } from '@/contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
-const CompaniesPage = () => {
-  const [searchTerm, setSearchTerm] = useState('');
+const CompaniesMap: React.FC = () => {
+  const mapContainer = useRef<HTMLDivElement>(null);
+  const map = useRef<mapboxgl.Map | null>(null);
+  const [selectedCompany, setSelectedCompany] = useState<any>(null);
+  const [userToken, setUserToken] = useState(import.meta.env.VITE_MAPBOX_TOKEN || '');
   const navigate = useNavigate();
-  const { canEdit, isAuthenticated } = useAuth();
 
-  const { data: companies = [], isLoading } = useQuery({
+  // Buscar dados das empresas
+  const { data: companies = [] } = useQuery({
     queryKey: ['companies'],
     queryFn: companiesApi.getAll
   });
 
-  const filteredCompanies = companies.filter(company =>
-    company.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    company.category.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  useEffect(() => {
+    if (!mapContainer.current || !userToken) return;
 
-  if (isLoading) {
+    mapboxgl.accessToken = userToken;
+    
+    map.current = new mapboxgl.Map({
+      container: mapContainer.current,
+      style: 'mapbox://styles/mapbox/streets-v11',
+      center: [-48.8487, -26.3044], // Joinville
+      zoom: 12,
+    });
+
+    // Adicionar controles de navegação
+    map.current.addControl(new mapboxgl.NavigationControl(), 'top-right');
+
+    // Adicionar marcadores para empresas
+    companies.forEach(company => {
+      const marker = new mapboxgl.Marker({
+        color: '#1E40AF'
+      })
+        .setLngLat([company.lng, company.lat])
+        .addTo(map.current!);
+
+      marker.getElement().addEventListener('click', () => {
+        setSelectedCompany(company);
+      });
+    });
+
+    return () => {
+      map.current?.remove();
+    };
+  }, [userToken, companies]);
+
+  if (!userToken) {
     return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-      </div>
+      <Card className="h-96">
+        <CardContent className="h-full flex items-center justify-center p-8">
+          <div className="text-center">
+            <MapPin className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+            <h3 className="text-lg font-semibold mb-2">Token do Mapbox necessário</h3>
+            <p className="text-muted-foreground mb-4">
+              Insira seu token público do Mapbox para visualizar o mapa
+            </p>
+            <div className="space-y-3">
+              <input
+                type="text"
+                placeholder="Insira seu token do Mapbox"
+                value={userToken}
+                onChange={(e) => setUserToken(e.target.value)}
+                className="w-full px-3 py-2 border border-input rounded-md"
+              />
+              <p className="text-xs text-muted-foreground">
+                Obtenha seu token em{' '}
+                <a href="https://mapbox.com/" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
+                  mapbox.com
+                </a>
+              </p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
     );
   }
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold flex items-center gap-3">
-            <Building className="h-8 w-8 text-company-blue" />
-            Empresas
-          </h1>
-          <p className="text-muted-foreground mt-1">
-            Descubra empresas incríveis em Joinville
-          </p>
-        </div>
-        {isAuthenticated && (
-          <Button onClick={() => navigate('/companies/new')} className="gap-2">
-            <Plus className="h-4 w-4" />
-            Nova Empresa
-          </Button>
-        )}
-      </div>
-
-      {/* Barra de pesquisa */}
+    <div className="relative">
       <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <MapPin className="h-5 w-5 text-company-blue" />
+            Mapa das Empresas
+          </CardTitle>
+        </CardHeader>
         <CardContent className="p-4">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Pesquisar empresas por nome ou categoria..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10"
-            />
-          </div>
+          <div ref={mapContainer} className="h-96 rounded-lg shadow-sm border" />
         </CardContent>
       </Card>
-
-      {/* Lista de empresas */}
-      <div className="grid gap-4">
-        {filteredCompanies.map((company) => (
-          <Card key={company.id} className="hover:shadow-md transition-shadow cursor-pointer">
-            <CardContent className="p-6">
-              <div className="flex items-start justify-between">
-                <div className="flex-1">
-                  <div className="flex items-center gap-3 mb-3">
-                    <div className="h-12 w-12 rounded-lg bg-gradient-to-br from-company-blue to-blue-600 flex items-center justify-center">
-                      <Building className="h-6 w-6 text-white" />
-                    </div>
-                    <div>
-                      <h3 className="text-xl font-semibold">{company.name}</h3>
-                      <Badge variant="secondary" className="mt-1">
-                        {company.category}
-                      </Badge>
-                    </div>
-                  </div>
-
-                  <p className="text-muted-foreground mb-4">
-                    {company.description}
-                  </p>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    <div className="flex items-center gap-2 text-sm">
-                      <Phone className="h-4 w-4 text-muted-foreground" />
-                      <span>{company.phone}</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-sm">
-                      <Globe className="h-4 w-4 text-muted-foreground" />
-                      <span>{company.website}</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-sm">
-                      <MapPin className="h-4 w-4 text-muted-foreground" />
-                      <span>{company.address}</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-sm">
-                      <Building className="h-4 w-4 text-muted-foreground" />
-                      <span>{company.employees} funcionários</span>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="flex gap-2 ml-4">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => navigate(`/companies/${company.id}`)}
-                  >
-                    Ver Perfil
-                  </Button>
-                  {canEdit('company', company.id, company.ownerId) && (
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => navigate(`/companies/${company.id}/edit`)}
-                    >
-                      <Edit className="h-4 w-4" />
-                    </Button>
-                  )}
-                </div>
+      
+      {selectedCompany && (
+        <Card className="absolute top-4 right-4 w-80 max-h-96 overflow-y-auto z-10 animate-scale-in">
+          <CardHeader className="pb-3">
+            <div className="flex items-start justify-between">
+              <div className="flex items-center gap-2">
+                <Building className="h-5 w-5 text-company-blue" />
+                <CardTitle className="text-lg">{selectedCompany.name}</CardTitle>
               </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-
-      {filteredCompanies.length === 0 && (
-        <Card>
-          <CardContent className="p-8 text-center">
-            <Building className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-            <h3 className="text-lg font-semibold mb-2">Nenhuma empresa encontrada</h3>
-            <p className="text-muted-foreground">
-              Tente ajustar os termos de pesquisa ou cadastre uma nova empresa.
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setSelectedCompany(null)}
+                className="h-8 w-8 p-0"
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
+          </CardHeader>
+          
+          <CardContent className="space-y-3">
+            <p className="text-sm text-muted-foreground">
+              {selectedCompany.description}
             </p>
+            
+            <Badge variant="secondary">
+              {selectedCompany.category}
+            </Badge>
+            
+            <div className="space-y-2">
+              <div className="flex items-center gap-2 text-sm">
+                <Phone className="h-4 w-4 text-muted-foreground" />
+                <span>{selectedCompany.phone}</span>
+              </div>
+              <div className="flex items-center gap-2 text-sm">
+                <Globe className="h-4 w-4 text-muted-foreground" />
+                <span>{selectedCompany.website}</span>
+              </div>
+              <div className="flex items-center gap-2 text-sm">
+                <MapPin className="h-4 w-4 text-muted-foreground" />
+                <span>{selectedCompany.address}</span>
+              </div>
+            </div>
+            
+            <Button 
+              className="w-full mt-4"
+              onClick={() => {
+                navigate(`/companies/${selectedCompany.id}`);
+              }}
+            >
+              Ver Perfil Completo
+            </Button>
           </CardContent>
         </Card>
       )}
@@ -151,4 +158,4 @@ const CompaniesPage = () => {
   );
 };
 
-export default CompaniesPage;
+export default CompaniesMap;

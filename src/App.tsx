@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -8,6 +7,7 @@ import { PublicLayout } from "@/components/PublicLayout";
 import { AdminLayout } from "@/components/AdminLayout";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { OwnerProtectedRoute } from "@/components/OwnerProtectedRoute";
+import { RedirectToEdit } from "@/components/RedirectToEdit";
 import { AuthProvider } from "@/contexts/AuthContext";
 import MapPage from "./pages/MapPage";
 import CompaniesPage from "./pages/CompaniesPage";

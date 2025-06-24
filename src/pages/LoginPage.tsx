@@ -147,12 +147,13 @@ const LoginPage = () => {
         <Card className="mt-4 bg-blue-50 border-blue-200">
           <CardContent className="p-4 text-center">
             <p className="text-sm text-blue-700 mb-2">
-              <strong>Demonstração:</strong> Use as credenciais dos usuários mock
+              <strong>Demonstração:</strong> Cada usuário representa uma empresa
             </p>
             <div className="text-xs text-blue-600 space-y-1">
-              <p>Admin: admin@admin.com / 123456</p>
-              <p>Empresa: contato@techjoinville.com.br / 123456</p>
-              <p>Organizador: organizador@eventos.com / 123456</p>
+              <p><strong>Admin (Empresa ID: 1):</strong> admin@admin.com / 123456</p>
+              <p><strong>TechJoinville (Empresa ID: 1):</strong> contato@techjoinville.com.br / 123456</p>
+              <p><strong>Metalúrgica (Empresa ID: 2):</strong> contato@metalurgicnorte.com.br / 123456</p>
+              <p><strong>Organizador (Empresa ID: 1):</strong> organizador@eventos.com / 123456</p>
             </div>
           </CardContent>
         </Card>

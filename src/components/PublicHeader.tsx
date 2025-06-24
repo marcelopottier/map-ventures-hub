@@ -1,5 +1,5 @@
 
-import { MapPin, Building, Calendar, LogIn, User, LogOut } from "lucide-react"
+import { MapPin, Building, Calendar, LogIn, User, LogOut, Edit } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useNavigate, useLocation } from "react-router-dom"
 import { useAuth } from "@/contexts/AuthContext"
@@ -77,16 +77,43 @@ export function PublicHeader() {
               <DropdownMenuTrigger asChild>
                 <Button variant="outline" className="gap-2">
                   <User className="h-4 w-4" />
-                  {user?.name}
+                  <span className="hidden sm:inline">{user?.name}</span>
+                  <span className="sm:hidden">Perfil</span>
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
+              <DropdownMenuContent align="end" className="w-56">
+                <div className="flex items-center gap-2 p-2 border-b">
+                  <div className="h-8 w-8 rounded-full bg-gradient-to-br from-map-blue to-map-green flex items-center justify-center">
+                    <User className="h-4 w-4 text-white" />
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="text-sm font-medium">{user?.name}</span>
+                    <span className="text-xs text-muted-foreground">{user?.email}</span>
+                  </div>
+                </div>
+                {user?.companyId && (
+                  <>
+                    <DropdownMenuItem onClick={() => navigate(`/companies/${user.companyId}`)}>
+                      <Building className="h-4 w-4 mr-2" />
+                      Ver Minha Empresa
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => navigate(`/companies/${user.companyId}/edit`)}>
+                      <Edit className="h-4 w-4 mr-2" />
+                      Editar Minha Empresa
+                    </DropdownMenuItem>
+                  </>
+                )}
                 {user?.type === 'admin' && (
                   <DropdownMenuItem onClick={() => navigate('/admin')}>
+                    <User className="h-4 w-4 mr-2" />
                     Dashboard Admin
                   </DropdownMenuItem>
                 )}
-                <DropdownMenuItem onClick={handleLogout}>
+                <DropdownMenuItem onClick={() => navigate('/events/new')}>
+                  <Calendar className="h-4 w-4 mr-2" />
+                  Novo Evento
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={handleLogout} className="text-red-600">
                   <LogOut className="h-4 w-4 mr-2" />
                   Sair
                 </DropdownMenuItem>
@@ -95,7 +122,8 @@ export function PublicHeader() {
           ) : (
             <Button onClick={() => navigate('/login')} className="gap-2">
               <LogIn className="h-4 w-4" />
-              Entrar
+              <span className="hidden sm:inline">Entrar</span>
+              <span className="sm:hidden">Login</span>
             </Button>
           )}
         </div>

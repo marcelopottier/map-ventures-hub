@@ -20,12 +20,14 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 // Mock users
+// Mock users
 const mockUsers: User[] = [
   {
     id: '1',
     name: 'Admin Geral',
     email: 'admin@admin.com',
-    type: 'admin'
+    type: 'admin',
+    companyId: '1' // Admin também pode ter uma empresa associada
   },
   {
     id: '2',
@@ -45,7 +47,8 @@ const mockUsers: User[] = [
     id: '4',
     name: 'Organizador de Eventos',
     email: 'organizador@eventos.com',
-    type: 'organizer'
+    type: 'organizer',
+    companyId: '1' // Organizadores também podem ter empresa associada
   }
 ];
 

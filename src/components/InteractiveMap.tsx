@@ -13,11 +13,12 @@ interface MapProps {
   mapboxToken?: string;
 }
 
-const InteractiveMap: React.FC<MapProps> = ({ mapboxToken }) => {
+
+const InteractiveMap: React.FC = () => {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
   const [selectedItem, setSelectedItem] = useState<any>(null);
-  const [userToken, setUserToken] = useState(mapboxToken || '');
+  const [userToken, setUserToken] = useState(import.meta.env.VITE_MAPBOX_TOKEN || '');
 
   // Buscar dados reais das APIs
   const { data: companies = [] } = useQuery({
